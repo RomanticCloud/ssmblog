@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wang.mapper.BlogTypeMapper">
+    <resultMap id="BlogTypeResult" type="BlogType">
+        <result property="id" column="id"/>
+        <result property="typeName" column="typeName"/>
+        <result property="orderNo" column="orderNo"/>
+        <result property="blogCount" column="blogCount"/>
+    </resultMap>
+
+    <select id="countList" resultMap="BlogTypeResult">
+        select t2.id,t2.typeName,(select count(*) from db_blog.t_blog t1 where t1.typeId=t2.id) blogCount
+        from db_blog.t_blogtype t2
+    </select>
+
+    <select id="queryById" parameterType="Integer" resultMap="BlogTypeResult">
+        select *
+        from db_blog.t_blogtype
+        where id=#{id};
+    </select>
+
+    <select id="list" parameterType="Map" resultMap="BlogTypeResult">
+        select *
+        from db_blog.t_blogtype
+        <if test="typeName!=null and typeName!=''">
+            where typeName=#{typeName},
+        </if>
+        <if test="start!=null and limit!=null">
+            limit #{start},#{limit}
+        </if>
+    </select>
+
+    <select id="getTotal" parameterType="Map" resultType="Long">
+        select count(*)
+        from db_blog.t_blogtype;
+    </select>
+
+    <insert id="add" parameterType="BlogType">
+        insert into db_blog.t_blogtype(typeName, orderNo)
+        values (#{typeName},#{orderNo});
+    </insert>
+
+    <update id="update" parameterType="BlogType">
+        update db_blog.t_blogtype
+        <set>
+            <if test="typeName!=null and typeName!=''">
+                typeName=#{typeName},
+            </if>
+            <if test="orderNo!=null and orderNo!=''">
+                orderNo=#{orderNo},
+            </if>
+        </set>
+        where id=#{id};
+    </update>
+
+    <delete id="delete" parameterType="Integer">
+        delete
+        from db_blog.t_blogtype
+        where id=#{id};
+    </delete>
+</mapper>
